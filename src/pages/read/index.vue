@@ -48,7 +48,7 @@
     methods: {
       getData () {
         this.$net.get('/readList').then(res => {
-          console.log(res)
+          // console.log(res)
           this.shows = false
           this.readlist = res.data.map(item => {
             item.percent = Math.ceil(item.title.index / item.title.total * 100)

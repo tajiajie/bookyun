@@ -82,9 +82,9 @@
     },
     mounted () {
       this.res = {}
-      console.log(this.options)
+      // console.log(this.options)
       this.$net.get(`/book/${this.options}`).then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         this.res = res.data
         this.shows = false
       })
@@ -92,7 +92,7 @@
     methods: {
       handleCollect () {
         this.$net.post('/collection', {bookId: this.options}).then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.code === 200) {
             wx.showToast({
               title: `${res.msg}`,

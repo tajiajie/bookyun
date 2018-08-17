@@ -74,14 +74,14 @@ export const login = function () {
   return new Promise(resolve => {
     wx.login({
       success (res) {
-        console.log(res)
+        // console.log(res)
         net.post('/login', {
           code: res.code,
           appid: 'wxe6c3679f8f2f6c5c',
           secret: 'b55666bbb0e38e19d4462851e79d3451'
         }).then(data => {
           resolve(data)
-          console.log(data)
+          // console.log(data)
         })
       }
     })

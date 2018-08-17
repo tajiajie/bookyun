@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="top-box">
+    <div class="top-box" v-if="!show">
       <div class="login">
         <div class="xinxi">
           <open-data type="userAvatarUrl" class="open-data"></open-data>
@@ -12,7 +12,7 @@
 
         <div class="zhu" @click="handleTest">
           <div class="fenlei" @click="handleCollection">
-            <span class="num">0</span>
+            <span class="num">{{res}}</span>
             <span class="span">收藏</span>
           </div>
           <a href="#" class="fenlei">
@@ -43,7 +43,8 @@
     data () {
       return {
         show: true,
-        canIUse: wx.canIUse('button.open-type.getUserInfo')
+        canIUse: wx.canIUse('button.open-type.getUserInfo'),
+        res: ''
       }
     },
     onLoad () {
@@ -55,7 +56,7 @@
             // this.show = false
             wx.getUserInfo({
               success: function (res) {
-                console.log(res.userInfo)
+                // console.log(res.userInfo)
               }
             })
           }
@@ -83,12 +84,21 @@
         //   }
         // })
         login()
+        this.show = false
       },
       handleCollection () {
         wx.navigateTo({
           url: '/pages/collection/main'
         })
+      },
+      getData () {
+        this.$net.get('/collection').then(res => {
+          this.res = res.data.length
+        })
       }
+    },
+    onShow () {
+      this.getData()
     }
   }
 </script>
@@ -101,16 +111,8 @@
   }
   button{
     width: 200px;
-    margin: 20px auto;
+    margin: 200px auto;
   }
-  /*.btn1{*/
-    /*position: absolute;*/
-    /*top: 0;*/
-    /*bottom: 0;*/
-    /*left: 0;*/
-    /*right: 0;*/
-    /*z-index: 99;*/
-  /*}*/
   .login{
     padding: 0 10px;
   }

@@ -18,7 +18,9 @@
           </div>
           <div class="look">
             <span>上次查看：{{item.title.title}}</span>
-            <span>两天前</span>
+            <span>
+              <getTime :time="item.updatedTime"></getTime>
+            </span>
           </div>
           <div class="btn">
             <button @click="handleJump(item)">继续阅读</button>
@@ -32,7 +34,11 @@
 </template>
 
 <script>
+  import getTime from '@/components/time'
   export default {
+    components: {
+      getTime
+    },
     data () {
       return {
         readlist: [],
@@ -42,7 +48,7 @@
     methods: {
       getData () {
         this.$net.get('/readList').then(res => {
-          // console.log(res)
+          console.log(res)
           this.shows = false
           this.readlist = res.data.map(item => {
             item.percent = Math.ceil(item.title.index / item.title.total * 100)

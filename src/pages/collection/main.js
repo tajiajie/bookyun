@@ -6,8 +6,6 @@ app.$mount()
 
 export default {
   config: {
-    navigationBarTitleText: '我的',
-    navigationBarBackgroundColor: '#1296db',
-    navigationBarTextStyle: 'light'
+    navigationBarTitleText: '我的收藏'
   }
 }

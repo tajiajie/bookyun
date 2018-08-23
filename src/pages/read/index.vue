@@ -1,33 +1,43 @@
 <template>
   <div>
-    <div class="jiazai">
-      <img src="/static/Double%20Ring-2.7s-200px.svg" v-if="shows">
-    </div>
+    <div v-if="!isShow">
+      <div class="jiazai">
+        <img src="/static/Double%20Ring-2.7s-200px.svg" v-if="shows">
+      </div>
 
-    <div class="body" v-if="!shows">
-      <div class="my-read" v-for="(item,index) in readlist" :key="index">
-        <div class="left-box">
-          <img :src="item.book.img">
-        </div>
-
-        <div class="right-box">
-          <div class="book-title">{{item.book.title}}</div>
-          <div class="zhangjie">书籍{{item.title.index}}/{{item.title.total}}章节</div>
-          <div class="progress-box">
-            <progress class="progress" :percent="item.percent" :active="true" stroke-width="4" activeColor="#1296db" backgroundColor="#8a8a8a" /><span>已看{{item.percent}}%</span>
+      <div class="body" v-if="!shows">
+        <div class="my-read" v-for="(item,index) in readlist" :key="index">
+          <div class="left-box">
+            <img :src="item.book.img">
           </div>
-          <div class="look">
-            <span>上次查看：{{item.title.title}}</span>
-            <span>
+
+          <div class="right-box">
+            <div class="book-title">{{item.book.title}}</div>
+            <div class="zhangjie">书籍{{item.title.index}}/{{item.title.total}}章节</div>
+            <div class="progress-box">
+              <progress class="progress" :percent="item.percent" :active="true" stroke-width="4" activeColor="#1296db" backgroundColor="#8a8a8a" /><span>已看{{item.percent}}%</span>
+            </div>
+            <div class="look">
+              <span>上次查看：{{item.title.title}}</span>
+              <span>
               <getTime :time="item.updatedTime"></getTime>
             </span>
-          </div>
-          <div class="btn">
-            <button @click="handleJump(item)">继续阅读</button>
-            <button>查看文档</button>
+            </div>
+            <div class="btn">
+              <button @click="handleJump(item)">继续阅读</button>
+              <button @click="handleJumpss(item)">查看文档</button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+
+
+    <div class="login" v-if="isShow">
+      <div class="login1">您还没有登录</div>
+      <button class="tran" @click="handleTren">
+        请点击，跳转至登录页面
+      </button>
     </div>
   </div>
 
@@ -42,13 +52,19 @@
     data () {
       return {
         readlist: [],
-        shows: true
+        shows: true,
+        isShow: false
       }
     },
     methods: {
       getData () {
         this.$net.get('/readList').then(res => {
           // console.log(res)
+          if (res.code === 401) {
+            this.isShow = true
+          } else {
+            this.isShow = false
+          }
           this.shows = false
           this.readlist = res.data.map(item => {
             item.percent = Math.ceil(item.title.index / item.title.total * 100)
@@ -59,6 +75,19 @@
       handleJump (item) {
         wx.navigateTo({
           url: '/pages/detail/main?id=' + item.title._id + '&opt=' + item.book._id
+        })
+        // console.log(item.title._id)
+        // console.log(item.book._id)
+      },
+      handleJumpss (item) {
+        wx.navigateTo({
+          url: '/pages/book/main?id=' + item.book._id
+        })
+        // console.log(item.._id)
+      },
+      handleTren () {
+        wx.switchTab({
+          url: '/pages/my/main'
         })
       }
     },
@@ -81,7 +110,8 @@
   }
   .my-read{
     display: flex;
-    margin-bottom: 15px;
+    margin-top: 4px;
+    margin-bottom: 12px;
   }
   .left-box{
     flex: 1;
@@ -138,5 +168,20 @@
   button:hover{
     background-color: #f1f1f1;
     color: #333;
+  }
+  .login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 200px;
+  }
+  .login1{
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  .tran{
+    width: 200px;
+    height: 40px;
+    font-size: 16px;
   }
 </style>

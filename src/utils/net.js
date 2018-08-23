@@ -15,9 +15,9 @@ const net = {
         header: header, // 设置请求的 header
         success: function (res) {
           // success
-          if (res.header.token) {
+          if (res.header.Token) {
             // 判断如果存在登录状态的请求头，存起来
-            wx.setStorageSync('token', data.header.token)
+            wx.setStorageSync('token', res.header.Token)
           }
           // wx.hideLoading()
           resolve(res.data)
@@ -47,9 +47,9 @@ const net = {
         header: header, // 设置请求的 header
         success: function (res) {
           // success
-          if (res.header.token) {
+          if (res.header.Token) {
             // 判断如果存在登录状态的请求头，存起来
-            wx.setStorageSync('token', data.header.token)
+            wx.setStorageSync('token', res.header.Token)
           }
           // wx.hideLoading()
           resolve(res.data)
@@ -81,7 +81,6 @@ export const login = function () {
           secret: 'b55666bbb0e38e19d4462851e79d3451'
         }).then(data => {
           resolve(data)
-          // console.log(data)
         })
       }
     })

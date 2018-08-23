@@ -3,11 +3,13 @@
     <div class="swiper">
         <swiper :indicator-dots="indicator" :autoplay="autoplay" :interval="interval" :duration="duration" class="swipe">
           <block v-for="item in msg" :key="item">
-            <a :href="'/pages/book/main?id='+item.book._id">
-            <swiper-item>
-              <img :src="item.img" class="slide-image"/>
-            </swiper-item>
-            </a>
+            <div @click="handleJump(item)">
+              <!--<a :href="'/pages/book/main?id='+item.book._id">-->
+                <swiper-item>
+                  <img :src="item.img" class="slide-image"/>
+                </swiper-item>
+              <!--</a>-->
+            </div>
           </block>
         </swiper>
     </div>
@@ -24,7 +26,10 @@
             <div class="content">{{item1.desc}}</div>
             <div class="author">
               <div class="author-left">{{item1.author}}</div>
-              <div class="author-right">两天前 前端开发{{item1.looknums}}人在看</div>
+              <div class="author-right">
+                <getTime class="time" :time="item1.updateTime"></getTime>
+                <span>&nbsp前端开发{{item1.looknums}}人在看</span>
+              </div>
             </div>
           </div>
         </div>
@@ -34,7 +39,11 @@
 </template>
 
 <script>
+import getTime from '@/components/time'
 export default {
+  components: {
+    getTime
+  },
   data () {
     return {
       indicator: true,
@@ -42,18 +51,42 @@ export default {
       interval: 3000,
       duration: 100,
       msg: [],
+      classifys: [],
+      pn: 1,
       classify: []
     }
   },
   mounted () {
+    this.getData()
     this.$net.get('/swiper').then(res => {
-      // console.log(res.data[0].book)
       this.msg = res.data
     })
-    this.$net.get('/category/books').then(res => {
-      // console.log(res.data)
-      this.classify = res.data
-    })
+  },
+  methods: {
+    getData () {
+      this.$net.get('/category/books', {pn: this.pn, size: 2}).then(res => {
+        // console.log(res.data)
+        this.classifys = res.data
+        this.classify = [...this.classify, ...this.classifys]
+        if (this.classifys.length === 0) {
+          wx.showToast({
+            title: '已全部加载完成',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+    },
+    handleJump (item) {
+      wx.navigateTo({
+        url: `/pages/book/main?id=` + item.book._id
+      })
+    }
+  },
+  onReachBottom () {
+    this.pn = this.pn + 1
+    // console.log(this.pn)
+    this.getData()
   }
 }
 </script>
@@ -123,5 +156,7 @@ export default {
   }
   .author-right{
     float: right;
+    display: flex;
+    justify-content: flex-end;
   }
 </style>

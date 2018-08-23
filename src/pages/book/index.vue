@@ -47,8 +47,11 @@
         <div class="botn view">
           <div class="cou">
             <div class="look-con">查看目录</div>
-            <div class="look-tent">共19章</div>
-            <div class="look-new">更新于2天前></div>
+            <div class="look-tent">共{{mag}}章</div>
+            <div class="look-new">
+              <span>更新于</span>
+              <getTime :time="res.updateTime"></getTime>
+            </div>
           </div>
         </div>
         <!--按键-->
@@ -63,13 +66,18 @@
 </template>
 
 <script>
+  import getTime from '@/components/time'
   export default {
+    components: {
+      getTime
+    },
     data () {
       return {
         shows: true,
         options: '',
         res: {},
-        show: false
+        show: false,
+        mag: ''
       }
     },
     onLoad (options) {
@@ -88,12 +96,20 @@
         this.res = res.data
         this.shows = false
       })
+      this.$net.get(`/titles/${this.options}`).then(res => {
+        // console.log(res.data)
+        this.mag = res.data.length
+      })
     },
     methods: {
       handleCollect () {
         this.$net.post('/collection', {bookId: this.options}).then(res => {
           // console.log(res)
-          if (res.code === 200) {
+          if (res.code === 401) {
+            wx.switchTab({
+              url: '/pages/my/main'
+            })
+          } else if (res.code === 200) {
             wx.showToast({
               title: `${res.msg}`,
               icon: 'none',
@@ -210,6 +226,8 @@
     color: #999;
     font-size: 10px;
     float: right;
+    display: flex;
+    justify-content: flex-end;
   }
   .read{
     width: 100%;

@@ -35,6 +35,12 @@ export default {
         selectedIconPath: '/static/阅读1.png'
       },
       {
+        pagePath: 'pages/classify/main',
+        text: '图书分类',
+        iconPath: '/static/classify.png',
+        selectedIconPath: '/static/classify1.png'
+      },
+      {
         pagePath: 'pages/my/main',
         text: '个人中心',
         iconPath: '/static/个人中心.png',

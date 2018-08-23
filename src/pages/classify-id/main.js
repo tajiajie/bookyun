@@ -6,7 +6,6 @@ app.$mount()
 
 export default {
   config: {
-    navigationBarTitleText: '我的收藏',
-    onReachBottomDistance: 40
+    navigationBarTitleText: '图书'
   }
 }

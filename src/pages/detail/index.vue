@@ -8,15 +8,23 @@
       <div class="content">
         <div :style="fontSize">
           <wemark :md="res.content" link highlight type="rich-text"></wemark>
+          <div class="null"></div>
         </div>
       </div>
 
+
       <div class="bian">
-        <div class="iconfont icon-shangyiye item" @click="handleShang"></div>
-        <div class="iconfont icon-mulu item" @click="handleMenu"></div>
+        <div class="item icon" @click="handleShang">
+          <img src="/static/last.png">
+        </div>
+        <div class="item icon" @click="handleMenu">
+          <img src="/static/list.png">
+        </div>
         <div class="item" @click="handleAdd">A+</div>
         <div class="item" @click="handleJian">A-</div>
-        <div class="iconfont icon-xiayiye item" @click="handleXia"></div>
+        <div class="item icon" @click="handleXia">
+          <img src="/static/next.png">
+        </div>
       </div>
 
       <div class="yinying" v-show="isShow" @click="handleShou"></div>
@@ -47,12 +55,13 @@
         titles: [],
         arr: '',
         Promise: {},
-        title: ''
+        title: '',
+        bar: ''
       }
     },
     onLoad (options) {
-      console.log(this.options)
       this.options = options.id
+      // console.log(this.options)
       this.option = options.opt
       wx.showToast({
         title: '加载中',
@@ -69,7 +78,11 @@
         this.res = {}
         this.$net.get(`/article/${this.options}`).then(res => {
           // this.isShows = false
-          this.res = res.data.article
+          this.bar = res.data
+          wx.setNavigationBarTitle({
+            title: this.bar.title
+          })
+          this.res = this.bar.article
         })
       },
       async fOo () {
@@ -120,7 +133,11 @@
         this.$net.get(`/article/${this.options}`).then(res => {
           // console.log(this.options)
           // console.log(this.arr)
-          this.res = res.data.article
+          this.bar = res.data
+          wx.setNavigationBarTitle({
+            title: this.bar.title
+          })
+          this.res = this.bar.article
         })
       },
       handleXia () {
@@ -138,13 +155,21 @@
         this.res = {}
         this.$net.get(`/article/${this.options}`).then(res => {
           // console.log(this.options)
-          this.res = res.data.article
+          this.bar = res.data
+          wx.setNavigationBarTitle({
+            title: this.bar.title
+          })
+          this.res = this.bar.article
         })
       },
       handleMulu (item) {
         this.options = item._id
         this.$net.get(`/article/${this.options}`).then(res => {
-          this.res = res.data.article
+          this.bar = res.data
+          wx.setNavigationBarTitle({
+            title: this.bar.title
+          })
+          this.res = this.bar.article
           this.isShow = false
           this.trans = '-320px'
           // console.log(item._id)
@@ -162,9 +187,13 @@
 .content{
   padding: 0 10px;
 }
+.null{
+  width: 100%;
+  height: 100rpx;
+}
 .bian{
   width: 100%;
-  height: 10%;
+  height: 100rpx;
   border-top: 2px solid #E9E9E9;
   position: fixed;
   bottom: 0;
@@ -207,5 +236,9 @@
   }
   .cata-item:hover{
     background: #e9e9e9;
+  }
+  .icon img{
+    width: 18px;
+    height: 18px;
   }
 </style>

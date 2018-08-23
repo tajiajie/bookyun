@@ -1,39 +1,41 @@
 <template>
   <div>
-    <div class="top-box" v-if="!show">
-      <div class="login">
-        <div class="xinxi">
-          <open-data type="userAvatarUrl" class="open-data"></open-data>
-          <div class="com">
-            <open-data class="name" type="userNickName"></open-data>
-            <span class="span">这个家伙很懒，什么也没留下</span>
+    <div v-if="!show">
+      <div class="top-box">
+        <div class="login">
+          <div class="xinxi">
+            <div class="open-data">
+              <img :src="user.avatarUrl">
+            </div>
+            <div class="com">
+              <div class="name">{{user.nickName}}</div>
+              <span class="span">这个家伙很懒，什么也没留下</span>
+            </div>
           </div>
-        </div>
 
-        <div class="zhu" @click="handleTest">
-          <div class="fenlei" @click="handleCollection">
-            <span class="num">{{res}}</span>
-            <span class="span">收藏</span>
+          <div class="zhu" @click="handleTest">
+            <div class="fenlei" @click="handleCollection">
+              <span class="num">{{res}}</span>
+              <span class="span">收藏</span>
+            </div>
+            <a href="#" class="fenlei">
+              <span class="num">0</span>
+              <span class="span">关注</span>
+            </a>
+            <a href="" class="fenlei">
+              <span class="num">0</span>
+              <span class="span">粉丝</span>
+            </a>
           </div>
-          <a href="#" class="fenlei">
-            <span class="num">0</span>
-            <span class="span">关注</span>
-          </a>
-          <a href="" class="fenlei">
-            <span class="num">0</span>
-            <span class="span">粉丝</span>
-          </a>
         </div>
       </div>
     </div>
 
+
     <!-- 需要使用 button 来授权登录 -->
     <div class="btn1">
-      <button @click="login" type="primary" :if="canIUse" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" v-if="show">授权登录</button>
+      <button  type="primary" open-type="getUserInfo" @getuserinfo="GetUserInfo" v-if="show">授权登录</button>
     </div>
-    <!--<div>-->
-      <!--<button @click="postData">1111</button>-->
-    <!--</div>-->
   </div>
 </template>
 
@@ -42,21 +44,25 @@
   export default {
     data () {
       return {
-        show: true,
-        canIUse: wx.canIUse('button.open-type.getUserInfo'),
-        res: ''
+        show: false,
+        res: '',
+        classify: '',
+        sum: '',
+        user: ''
       }
     },
     onLoad () {
       // 查看是否授权
+      let other = this
       wx.getSetting({
         success: function (res) {
           if (res.authSetting['scope.userInfo']) {
             // 已经授权，可以直接调用 getUserInfo 获取头 像昵称
-            // this.show = false
             wx.getUserInfo({
               success: function (res) {
                 // console.log(res.userInfo)
+                // console.log(other)
+                other.user = res.userInfo
               }
             })
           }
@@ -64,28 +70,38 @@
       })
     },
     methods: {
-      login () {
-        // wx.login({
-        //   success: function (res) {
-        //     console.log(res)
-        //     // 发起网络请求
-        //     wx.request({
-        //       url: 'https://m.yaojunrong.com/login',
-        //       method: 'POST',
-        //       header: {
-        //         'Content-Type': 'application/json'
-        //       },
-        //       success (data) {
-        //         console.log(data)
-        //         console.log(data.header.Token)
-        //         wx.setStorageSync('token', data.header.Token)
-        //       }
-        //     })
-        //   }
-        // })
-        login()
-        this.show = false
+      GetUserInfo: function (e) {
+        console.log(e)
+        if (e.mp.detail.errMsg === 'getUserInfo:ok') {
+          this.user = e.mp.detail.userInfo
+          login().then(() => {
+            this.getData()
+          })
+          this.show = false
+        }
       },
+      // login () {
+      //   // wx.login({
+      //   //   success: function (res) {
+      //   //     console.log(res)
+      //   //     // 发起网络请求
+      //   //     wx.request({
+      //   //       url: 'https://m.yaojunrong.com/login',
+      //   //       method: 'POST',
+      //   //       header: {
+      //   //         'Content-Type': 'application/json'
+      //   //       },
+      //   //       success (data) {
+      //   //         console.log(data)
+      //   //         console.log(data.header.Token)
+      //   //         wx.setStorageSync('token', data.header.Token)
+      //   //       }
+      //   //     })
+      //   //   }
+      //   // })
+      //   login()
+      //   this.show = false
+      // },
       handleCollection () {
         wx.navigateTo({
           url: '/pages/collection/main'
@@ -93,6 +109,9 @@
       },
       getData () {
         this.$net.get('/collection').then(res => {
+          if (res.code === 401) {
+            this.show = true
+          }
           this.res = res.data.length
         })
       }
@@ -119,7 +138,7 @@
   .xinxi{
     display: flex;
   }
-  .open-data{
+  .open-data img{
     width: 120rpx;
     height: 120rpx;
     display: flex;
